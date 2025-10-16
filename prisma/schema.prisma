@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Credit {
+  id             Int           @id @default(autoincrement())
+  name           String
+  value          Decimal       @db.Decimal(10, 2)
+  billingCycleId Int
+  billingCycle   BillingCycle  @relation(fields: [billingCycleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Debt {
+  id             Int           @id @default(autoincrement())
+  name           String
+  value          Decimal       @db.Decimal(10, 2)
+  status         DebtStatus    @default(PENDENTE) // PAGO, PENDENTE, AGENDADO
+  billingCycleId Int
+  billingCycle   BillingCycle  @relation(fields: [billingCycleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model BillingCycle {
+  id        Int      @id @default(autoincrement())
+  name      String
+  month     Int
+  year      Int
+  credits   Credit[]
+  debts     Debt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([month, year])
+}
+
+// Enum para status da dívida
+enum DebtStatus {
+  PAGO
+  PENDENTE
+  AGENDADO
+}

@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: mymoney
+      POSTGRES_PASSWORD: teste
+      POSTGRES_DB: mymoneydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://mymoney:teste@postgres:5432/mymoneydb
+volumes:
+  pgdata:

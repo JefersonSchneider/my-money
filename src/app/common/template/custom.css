@@ -1,0 +1,239 @@
+/* custom.css - Solução completa para MenuTree */
+
+/* RESET completo da sidebar */
+.sidebar-menu,
+.sidebar-menu * {
+  box-sizing: border-box;
+  position: static !important;
+  float: none !important;
+  clear: both;
+}
+
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Cada item do menu (Dashboard, Cadastros, etc) */
+.sidebar-menu > li {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative !important;
+}
+
+.sidebar-menu > li > a {
+  display: block;
+  padding: 12px 5px 12px 15px;
+  color: #b8c7ce;
+  text-decoration: none;
+}
+
+.sidebar-menu > li > a:hover {
+  color: #fff;
+  background: #1e282c;
+}
+
+.sidebar-menu > li > a > .fa {
+  width: 20px;
+  margin-right: 10px;
+}
+
+/* TreeView específico */
+.sidebar-menu .treeview {
+  display: block !important;
+  position: relative !important;
+}
+
+.sidebar-menu .treeview > a {
+  cursor: pointer;
+  display: block;
+  padding: 12px 5px 12px 15px;
+  color: #b8c7ce;
+  position: relative !important;
+}
+
+.sidebar-menu .treeview > a > .pull-right {
+  position: absolute !important;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+}
+
+.sidebar-menu .treeview.active > a > .pull-right {
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+/* Submenu (TreeView-menu) */
+.sidebar-menu .treeview-menu {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #2c3b41;
+  width: 100%;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.sidebar-menu .treeview.active > .treeview-menu {
+  display: block !important;
+}
+
+.sidebar-menu .treeview-menu > li {
+  display: block !important;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-menu .treeview-menu > li > a {
+  display: block !important;
+  padding: 5px 5px 5px 45px;
+  color: #8aa4af;
+  text-decoration: none;
+}
+
+.sidebar-menu .treeview-menu > li > a:hover {
+  color: #fff;
+  background: #1e282c;
+}
+
+.sidebar-menu .treeview-menu > li > a > .fa {
+  width: 20px;
+  margin-right: 10px;
+}
+
+/* Garantir visibilidade da sidebar */
+.main-sidebar {
+  position: fixed !important;
+  top: 50px;
+  left: 0;
+  height: calc(100vh - 50px);
+  overflow-y: auto;
+}
+
+.sidebar {
+  padding-top: 0;
+}
+
+/* ===== ESTILOS DO FOOTER ===== */
+
+/* Garantir que o wrapper ocupe toda a altura da página */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content wrapper deve crescer para empurrar o footer para baixo */
+.content-wrapper {
+  flex: 1;
+  min-height: calc(100vh - 50px - 50px);
+  margin-left: 230px;
+  padding: 15px;
+  background-color: #ecf0f5;
+}
+
+/* Estilos do Footer */
+.main-footer {
+  background: #fff;
+  padding: 15px;
+  color: #444;
+  border-top: 1px solid #d2d6de;
+  margin-left: 230px;
+  position: relative;
+  z-index: 1;
+}
+
+.main-footer a {
+  color: #3c8dbc;
+  text-decoration: none;
+}
+
+.main-footer a:hover {
+  text-decoration: underline;
+}
+
+.main-footer .pull-right {
+  float: right;
+}
+
+/* Responsivo */
+@media (max-width: 767px) {
+  .content-wrapper,
+  .main-footer {
+    margin-left: 0;
+  }
+}
+
+body.sidebar-collapse .content-wrapper,
+body.sidebar-collapse .main-footer {
+  margin-left: 50px;
+}
+
+@media (max-width: 767px) {
+  body.sidebar-collapse .content-wrapper,
+  body.sidebar-collapse .main-footer {
+    margin-left: 0;
+  }
+}
+
+/* ===== TOGGLE DA SIDEBAR ===== */
+
+/* Transições suaves */
+.main-sidebar,
+.content-wrapper,
+.main-footer {
+  transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+/* Sidebar normal */
+.main-sidebar {
+  width: 230px;
+}
+
+/* Sidebar colapsada */
+body.sidebar-collapse .main-sidebar {
+  width: 50px;
+}
+
+/* Esconder texto quando colapsado */
+body.sidebar-collapse .sidebar-menu > li > a > span,
+body.sidebar-collapse .sidebar-menu .treeview > a > span,
+body.sidebar-collapse .sidebar-menu .treeview > a > .pull-right {
+  display: none;
+}
+
+/* Centralizar ícones quando colapsado */
+body.sidebar-collapse .sidebar-menu > li > a,
+body.sidebar-collapse .sidebar-menu .treeview > a {
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body.sidebar-collapse .sidebar-menu > li > a > .fa {
+  margin-right: 0;
+  width: 100%;
+}
+
+/* Esconder submenu quando colapsado */
+body.sidebar-collapse .sidebar-menu .treeview-menu {
+  display: none !important;
+}
+
+/* Cursor pointer no botão de toggle */
+.sidebar-toggle {
+  cursor: pointer;
+}
