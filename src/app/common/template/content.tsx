@@ -6,5 +6,5 @@ const Content = (props: contentProps) => {
         <section className='content'>{props.children}</section>
     )
 }
-
+//teste
 export default Content;
