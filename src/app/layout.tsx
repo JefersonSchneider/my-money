@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react'; 
-import Dependencies from './common/template/dependencies'; 
+import type { ReactNode } from 'react';
+import Dependencies from './common/template/dependencies';
 import Header from './common/template/header';
 import SideBar from './common/template/sideBar';
 import Footer from './common/template/footer';
@@ -13,18 +13,19 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className="skin-blue sidebar-mini">
-        <Dependencies />
+        <body className="skin-blue sidebar-mini">
+          <Dependencies />
         <SidebarToggle/>
-        <div className="wrapper">
-          <Header />
-          <SideBar />
-          <div className="content-wrapper">
-            {children}
-          </div>
+          <div className="wrapper">
+            <Header />
+            <SideBar />
+            <div className="content-wrapper">
+              {children}
+            </div>
           <Footer/>
-        </div>
-      </body>
+          </div>
+        </body>
+
     </html>
   );
 }
