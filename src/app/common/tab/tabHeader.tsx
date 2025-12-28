@@ -1,18 +1,25 @@
 import { Component } from 'react';
 
 interface TabHeaderProps {
-    target: string;
     icon: string;
     label: string;
+    isActive?: boolean;
+    onClick?: () => void;
 }
 
 class TabHeader extends Component<TabHeaderProps> {
+    handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        if (this.props.onClick) {
+            this.props.onClick();
+        }
+    }
+
     render() {
         return (
-            <li className="nav-item">
+            <li className={`nav-item ${this.props.isActive ? 'active' : ''}`}>
                 <a href="#"
-                    data-toggle="tab"
-                    data-target={this.props.target}
+                    onClick={this.handleClick}
                 >
                     <i className={`fa fa-${this.props.icon}`}></i>{this.props.label}
                 </a>
