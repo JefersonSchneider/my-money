@@ -12,6 +12,8 @@ const Menu = (props: MenuProps) => {
             <MenuItem path='/dashboard' icon='dashboard' label='Dashboard' />
             <MenuTree label='Cadastros' icon='edit' path='#'>
                 <MenuItem path='/billingCycle' icon='usd' label='Ciclo de Pagamentos' />
+                <MenuItem path='/receitas' icon='plus-circle' label='Receitas' />
+                <MenuItem path='/despesas' icon='minus-circle' label='Despesas' />
             </MenuTree>
         </ul>
     );

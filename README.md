@@ -1,3 +1,11 @@
+Projeto ciclo de pagamento totalmente em react mas sem redux e sem mongodb, este foi refatorado para rodar sem estas tecnologias.
+
+para acessar o banco no cmd
+psql -U postgres -h localhost -p 5432 -d mymoneydb
+
+não é docker, é postgres
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

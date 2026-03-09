@@ -6,7 +6,7 @@ import ValueBox from "../common/widget/valueBox";
 import Row from "../common/layout/row";
 import axios from "axios";
 import { use } from "modules/@types/react";
-const BASE_URL = 'http://localhost:3001/api';
+// Using relative URLs avoids CORS issues and works both in dev and production
 
 const Dashboard = () => {
     const [credit, setCredit] = useState(0);
@@ -15,14 +15,16 @@ const Dashboard = () => {
 
     useEffect(() => {
         let cancelled = false;
-        axios.get(`${BASE_URL}/billingCycles/summary`)
+        axios.get('/api/billingCycle/summary')
             .then(res => {
+                console.log('summary response', res.data);
                 if (cancelled) return;
                 const { credit = 0, debt = 0 } = res.data ?? {};
                 setCredit(credit);
                 setDebt(debt);
             })
-            .catch(() => {
+            .catch(err => {
+                console.error('summary fetch failed', err);
                 if (cancelled) return;
                 setCredit(0);
                 setDebt(0);
@@ -38,11 +40,14 @@ const Dashboard = () => {
             <Content>
                 <Row>
                     <ValueBox cols='12 4' color='green' icon='bank'
-                        value='R$ 10,00' text='Total de Créditos' />
+                        value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(credit)}
+                        text='Total de Créditos' />
                     <ValueBox cols='12 4' color='red' icon='credit-card'
-                        value='R$ 10,00' text='Total de Débitos' />
+                        value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(debt)}
+                        text='Total de Débitos' />
                     <ValueBox cols='12 4' color='blue' icon='money'
-                        value='R$ 0,00' text='Valor Consolidado' />
+                        value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balance)}
+                        text='Valor Consolidado' />
                 </Row>
             </Content>
         </div>

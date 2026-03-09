@@ -1,13 +1,27 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Row from "../../common/layout/row";
 import Grid from "../../common/layout/grid";
+import { useRouter } from "next/navigation";
 
-const BillingCycleForm = () => {
-    const [name, setName] = useState("");
-    const [month, setMonth] = useState("");
-    const [year, setYear] = useState("");
+interface BillingCycleFormProps {
+    mode?: 'create' | 'edit';
+    initialValues?: {
+        id: number;
+        name: string;
+        month: number | string;
+        year: number | string;
+    } | null;
+    onSuccess?: () => void;
+    onCancel?: () => void;
+}
+
+const BillingCycleForm: React.FC<BillingCycleFormProps> = ({ mode = 'create', initialValues, onSuccess, onCancel }) => {
+    const router = useRouter();
+    const [name, setName] = useState(initialValues?.name ?? "");
+    const [month, setMonth] = useState(initialValues?.month?.toString?.() ?? "");
+    const [year, setYear] = useState(initialValues?.year?.toString?.() ?? "");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -39,34 +53,73 @@ const BillingCycleForm = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post('/api/billingCycle', {
-                name: name.trim(),
-                month: monthNum,
-                year: yearNum,
-            });
+            if (mode === 'edit' && initialValues?.id) {
+                const payload: any = {};
+                // enviar apenas campos que mudaram
+                if (initialValues.name !== name) payload.name = name.trim();
+                if (Number(initialValues.month) !== monthNum) payload.month = monthNum;
+                if (Number(initialValues.year) !== yearNum) payload.year = yearNum;
 
-            if (response.status === 201) {
-                setSuccess(true);
-                // Limpar formulário
-                setName("");
-                setMonth("");
-                setYear("");
-                // Limpar mensagem de sucesso após 3 segundos
-                setTimeout(() => setSuccess(false), 3000);
+                // Se nada mudou, apenas feedback e sair
+                if (Object.keys(payload).length === 0) {
+                    setSuccess(true);
+                    setTimeout(() => setSuccess(false), 2000);
+                    return;
+                }
+
+                const response = await axios.put(`/api/billingCycle/${initialValues.id}`, payload);
+                if (response.status === 200) {
+                    setSuccess(true);
+                    if (onSuccess) {
+                        onSuccess();
+                        return;
+                    }
+                    setTimeout(() => setSuccess(false), 3000);
+                }
+            } else {
+                const response = await axios.post('/api/billingCycle', {
+                    name: name.trim(),
+                    month: monthNum,
+                    year: yearNum,
+                });
+
+                if (response.status === 201) {
+                    setSuccess(true);
+                    // Se o pai passar onSuccess, priorizar navegação/refresh externo
+                    if (onSuccess) {
+                        onSuccess();
+                        return;
+                    }
+                    // Caso contrário, manter comportamento atual de limpar formulário
+                    setName("");
+                    setMonth("");
+                    setYear("");
+                    setTimeout(() => setSuccess(false), 3000);
+                }
             }
         } catch (err: any) {
             if (err.response?.status === 409) {
                 setError(err.response.data.error || "Já existe um ciclo de pagamento para este mês/ano");
             } else if (err.response?.status === 400) {
                 setError(err.response.data.error || "Dados inválidos");
+            } else if (err.response?.status === 404) {
+                setError(err.response.data.error || "Ciclo de pagamento não encontrado");
             } else {
                 setError("Erro ao salvar o ciclo de pagamento");
             }
-            console.error('Erro ao criar billing cycle:', err);
+            console.error('Erro ao salvar billing cycle:', err);
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (mode === 'edit' && initialValues) {
+            setName(initialValues.name ?? "");
+            setMonth(initialValues.month?.toString?.() ?? "");
+            setYear(initialValues.year?.toString?.() ?? "");
+        }
+    }, [mode, initialValues]);
 
     return (
         <form role="form" onSubmit={handleSubmit}>
@@ -127,7 +180,7 @@ const BillingCycleForm = () => {
             )}
             {success && (
                 <div className="alert alert-success" role="alert">
-                    Ciclo de pagamento criado com sucesso!
+                    {mode === 'edit' ? 'Dados carregados para edição.' : 'Ciclo de pagamento criado com sucesso!'}
                 </div>
             )}
             <div className="box-footer">
@@ -136,7 +189,20 @@ const BillingCycleForm = () => {
                     className="btn btn-primary"
                     disabled={loading}
                 >
-                    {loading ? "Salvando..." : "Salvar"}
+                    {loading ? (mode === 'edit' ? 'Atualizando...' : 'Salvando...') : (mode === 'edit' ? 'Atualizar' : 'Salvar')}
+                </button>
+                {' '}
+                <button
+                    type="button"
+                    className="btn btn-default"
+                    onClick={() => {
+                        if (onCancel) return onCancel();
+                        // fallback: ir para a página de ciclos (onde há as abas)
+                        router.push('/billingCycle');
+                    }}
+                    disabled={loading}
+                >
+                    Cancelar
                 </button>
             </div>
         </form>

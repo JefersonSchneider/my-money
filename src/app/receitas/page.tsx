@@ -8,25 +8,24 @@ import TabsHeader from '../common/tab/tabsHeader';
 import TabsContent from '../common/tab/tabsContent';
 import TabHeader from '../common/tab/tabHeader';
 import TabContent from '../common/tab/tabContent';
-import BillingCycleList from './components/billingCycleList';
-import BillingCycleForm from './components/billingCycleForm';
+import CreditList from './components/creditList';
+import CreditForm from './components/creditForm';
 
-// Tipo mínimo para compartilhar o item selecionado com o formulário
-type BillingCycle = {
+type Credit = {
     id: number;
     name: string;
-    month: number;
-    year: number;
+    value: number;
+    billingCycleId: number;
 };
 
-const BillingCyclePage = () => {
+const ReceeitasPage = () => {
     const [selectedTab, setSelectedTab] = useState('tabList');
-    const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle | null>(null);
+    const [selectedCredit, setSelectedCredit] = useState<Credit | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
 
     return (
         <div>
-            <ContentHeader title="Ciclos de Pagamento" small="Cadastro" />
+            <ContentHeader title="Receitas" small="Cadastro" />
             <Content>
                 <Tabs>
                     <TabsHeader>
@@ -42,32 +41,19 @@ const BillingCyclePage = () => {
                             isActive={selectedTab === 'tabCreate'}
                             onClick={() => setSelectedTab('tabCreate')}
                         />
-{/*                         
-                        <TabHeader
-                            icon="pencil"
-                            label="Alterar"
-                            isActive={selectedTab === 'tabUpdate'}
-                            onClick={() => setSelectedTab('tabUpdate')}
-                        />
-                        <TabHeader
-                            icon="trash-o"
-                            label="Excluir"
-                            isActive={selectedTab === 'tabDelete'}
-                            onClick={() => setSelectedTab('tabDelete')}
-                        /> */}
                     </TabsHeader>
                     <TabsContent>
                         <TabContent id="tabList" tab={{ selected: selectedTab }}>
-                            <BillingCycleList
-                                showUpdate={(bc: BillingCycle) => {
-                                    setSelectedBillingCycle(bc);
+                            <CreditList
+                                showUpdate={(credit: Credit) => {
+                                    setSelectedCredit(credit);
                                     setSelectedTab('tabUpdate');
                                 }}
                                 reloadKey={reloadKey}
                             />
                         </TabContent>
                         <TabContent id="tabCreate" tab={{ selected: selectedTab }}>
-                            <BillingCycleForm
+                            <CreditForm
                                 onSuccess={() => {
                                     setSelectedTab('tabList');
                                     setReloadKey(k => k + 1);
@@ -76,14 +62,14 @@ const BillingCyclePage = () => {
                             />
                         </TabContent>
                         <TabContent id="tabUpdate" tab={{ selected: selectedTab }}>
-                            {selectedBillingCycle ? (
-                                <BillingCycleForm
+                            {selectedCredit ? (
+                                <CreditForm
                                     mode="edit"
                                     initialValues={{
-                                        id: selectedBillingCycle.id,
-                                        name: selectedBillingCycle.name,
-                                        month: selectedBillingCycle.month,
-                                        year: selectedBillingCycle.year,
+                                        id: selectedCredit.id,
+                                        name: selectedCredit.name,
+                                        value: selectedCredit.value,
+                                        billingCycleId: selectedCredit.billingCycleId,
                                     }}
                                     onSuccess={() => {
                                         setSelectedTab('tabList');
@@ -92,10 +78,9 @@ const BillingCyclePage = () => {
                                     onCancel={() => setSelectedTab('tabList')}
                                 />
                             ) : (
-                                <p>Nenhum ciclo selecionado.</p>
+                                <p>Nenhuma receita selecionada.</p>
                             )}
                         </TabContent>
-                        <TabContent id="tabDelete" tab={{ selected: selectedTab }}><h1>Excluir</h1></TabContent>
                     </TabsContent>
                 </Tabs>
             </Content>
@@ -103,4 +88,4 @@ const BillingCyclePage = () => {
     );
 }
 
-export default BillingCyclePage;
+export default ReceeitasPage;

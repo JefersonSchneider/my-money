@@ -22,29 +22,35 @@ type BillingCycle = {
     }>;
 };
 
-const BillingCycleList = () => {
+interface BillingCycleListProps {
+    showUpdate?: (bc: BillingCycle) => void;
+    reloadKey?: number;
+}
+
+const BillingCycleList = ({ showUpdate, reloadKey }: BillingCycleListProps) => {
     const [billingCycles, setBillingCycles] = useState<BillingCycle[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        let cancelled = false;
-
+    const fetchList = () => {
+        setLoading(true);
+        setError(null);
         axios.get('/api/billingCycle')
             .then(res => {
-                if (cancelled) return;
                 setBillingCycles(res.data ?? []);
                 setLoading(false);
             })
             .catch(err => {
-                if (cancelled) return;
                 setError('Erro ao carregar os ciclos de pagamento');
                 setLoading(false);
                 console.error('Erro ao buscar billing cycles:', err);
             });
+    };
 
-        return () => { cancelled = true; };
-    }, []);
+    useEffect(() => {
+        fetchList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [reloadKey]);
 
     const getMonthName = (month: number): string => {
         const months = [
@@ -66,6 +72,7 @@ const BillingCycleList = () => {
         return (
             <div>
                 <p style={{ color: 'red' }}>{error}</p>
+                <button className='btn btn-default' onClick={fetchList}>Tentar novamente</button>
             </div>
         );
     }
@@ -78,12 +85,13 @@ const BillingCycleList = () => {
                         <th>Nome</th>
                         <th>Mês</th>
                         <th>Ano</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {billingCycles.length === 0 ? (
                         <tr>
-                            <td colSpan={3} style={{ textAlign: 'center' }}>
+                            <td colSpan={4} style={{ textAlign: 'center' }}>
                                 Nenhum ciclo de pagamento encontrado
                             </td>
                         </tr>
@@ -93,6 +101,29 @@ const BillingCycleList = () => {
                                 <td>{bc.name}</td>
                                 <td>{getMonthName(bc.month)}</td>
                                 <td>{bc.year}</td>
+                                <td>
+                                    <button className='btn btn-warning' onClick={() => showUpdate?.(bc)} title="Editar">
+                                        <i className="fa fa-pencil"></i>
+                                    </button>
+                                    {' '}
+                                    <button
+                                        className='btn btn-danger'
+                                        title="Excluir"
+                                        onClick={async () => {
+                                            const ok = window.confirm('Tem certeza que deseja excluir esse registro?');
+                                            if (!ok) return;
+                                            try {
+                                                await axios.delete(`/api/billingCycle/${bc.id}`);
+                                                fetchList();
+                                            } catch (err: any) {
+                                                console.error('Erro ao excluir billing cycle:', err);
+                                                alert(err?.response?.data?.error || 'Erro ao excluir o registro');
+                                            }
+                                        }}
+                                    >
+                                        <i className="fa fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                         ))
                     )}
